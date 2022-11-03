@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-void Insertion_sort(std::vector<std::pair<int, int>> &coordinates) {
+void insertion_sort(std::vector<std::pair<int, int>> &coordinates) {
   for (int i = 1; i < coordinates.size(); ++i) {
     std::pair<int, int> value = coordinates[i];
     int j = i - 1;
@@ -19,7 +19,7 @@ int main() {
   for (int i = 0; i < n; ++i) {
     std::cin >> coordinates[i].first >> coordinates[i].second;
   }
-  Insertion_sort(coordinates);
+  insertion_sort(coordinates);
   for (int i = 0; i < n; ++i) {
     std::cout << coordinates[i].first << ' ' << coordinates[i].second
               << std::endl;
