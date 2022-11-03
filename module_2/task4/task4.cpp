@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-void Merge(std::vector<int> &first, std::vector<int> &second, std::vector<int> &result, int k) {
+void Merge(const std::vector<int> &first, const std::vector<int> &second, std::vector<int> &result, int k) {
     int i = 0;
     int j = 0;
     int len1 = first.size();
@@ -31,19 +31,19 @@ void MergeSort(std::vector<int> &array, int k) {
     if (len <= 1) {
         return;
     }
-    int len1 = len / 2;
-    int len2 = len - len1;
-    std::vector<int> half1(len1);
-    std::vector<int> half2(len2);
-    for (int i = 0; i < len1; ++i) {
-        half1[i] = array[i];
+    int left_half_len = len / 2;
+    int right_half_len = len - left_half_len;
+    std::vector<int> left_half(left_half_len);
+    std::vector<int> right_half(right_half_len);
+    for (int i = 0; i < left_half_len; ++i) {
+        left_half[i] = array[i];
     }
-    for (int i = len1; i < len; ++i) {
-        half2[i - len1] = array[i];
+    for (int i = left_half_len; i < len; ++i) {
+        right_half[i - left_half_len] = array[i];
     }
-    MergeSort(half1, k);
-    MergeSort(half2, k);
-    Merge(half1, half2, array, k);
+    MergeSort(left_half, k);
+    MergeSort(right_half, k);
+    Merge(left_half, right_half, array, k);
 }
 
 void Add(std::vector<int> &half1, std::vector<int> &half2, int value, int k, int i) {
