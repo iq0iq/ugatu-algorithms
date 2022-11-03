@@ -10,7 +10,7 @@ struct date {
     bool alive = true;
 };
 
-bool Comparator(date &date1, date &date2) {
+bool Comparator(const date &date1, const date &date2) {
     return std::tie(date1.year, date1.month, date1.day) < std::tie(date2.year, date2.month, date2.day);
 }
 
