@@ -3,8 +3,11 @@
 #include <iostream>
 #include <vector>
 
-void Merge(const int *first, int len1, const int *second, int len2, int *result, int k) {
-    int i = 0, j = 0;
+void Merge(std::vector<int> &first, std::vector<int> &second, std::vector<int> &result, int k) {
+    int i = 0;
+    int j = 0;
+    int len1 = first.size();
+    int len2 = second.size();
     while (i < len1 && j < len2 && i + j < k) {
         if (second[j] >= first[i]) {
             result[i + j] = first[i];
@@ -23,26 +26,32 @@ void Merge(const int *first, int len1, const int *second, int len2, int *result,
         ++j;
     }
 }
-void MergeSort(int *array, int len, int k) {
+void MergeSort(std::vector<int> &array, int k) {
+    int len = array.size();
     if (len <= 1) {
         return;
     }
     int len1 = len / 2;
     int len2 = len - len1;
-    MergeSort(array, len1, k);
-    MergeSort(array + len1, len2, k);
-    int *result = new int[len];
-    Merge(array, len1, array + len1, len2, result, k);
-    memcpy(array, result, sizeof(int) * len);
-    delete[] result;
+    std::vector<int> half1(len1);
+    std::vector<int> half2(len2);
+    for (int i = 0; i < len1; ++i) {
+        half1[i] = array[i];
+    }
+    for (int i = len1; i < len; ++i) {
+        half2[i - len1] = array[i];
+    }
+    MergeSort(half1, k);
+    MergeSort(half2, k);
+    Merge(half1, half2, array, k);
 }
 
 void Add(std::vector<int> &half1, std::vector<int> &half2, int value, int k, int i) {
     half2.push_back(value);
     if ((i + 1) % k == 0) {
-        MergeSort(half2.data(), half2.size(), k);
+        MergeSort(half2, k);
         std::vector<int> result(k);
-        Merge(half1.data(), half1.size(), half2.data(), half2.size(), result.data(), k);
+        Merge(half1, half2, result, k);
         half1 = result;  // merged both vectors reducing the total number of arguments to k, the result in half1
         half2.clear();
     }
@@ -59,9 +68,9 @@ int main() {
         std::cin >> value;
         Add(half1, half2, value, k, i);
     }
-    MergeSort(half2.data(), half2.size(), k);
+    MergeSort(half2, k);
     std::vector<int> result(k);
-    Merge(half1.data(), half1.size(), half2.data(), half2.size(), result.data(), k);
+    Merge(half1, half2, result, k);
     for (int i = 0; i < k; ++i) {
         std::cout << result[i] << ' ';
     }
