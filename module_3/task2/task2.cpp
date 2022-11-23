@@ -6,8 +6,7 @@ struct Node {
     int Data;
     Node *Left = nullptr;
     Node *Right = nullptr;
-    Node *Parent = nullptr;
-    explicit Node(int Data, Node *Parent = nullptr) : Data(Data), Parent(Parent) {}
+    explicit Node(int Data) : Data(Data) {}
     ~Node() {
         delete Left;
         delete Right;
@@ -22,6 +21,7 @@ public:
     ~Tree() {
         delete root;
     }
+    explicit Tree() : root(nullptr) {}
     void Add(int value);
     int BFS();
 };
@@ -37,14 +37,14 @@ void Tree::Add(int value) {
             if (current->Left) {
                 current = current->Left;
             } else {
-                current->Left = new Node(value, current);
+                current->Left = new Node(value);
                 break;
             }
         } else {  // Идем в Right
             if (current->Right) {
                 current = current->Right;
             } else {
-                current->Right = new Node(value, current);
+                current->Right = new Node(value);
                 break;
             }
         }
@@ -53,7 +53,7 @@ void Tree::Add(int value) {
 
 int Tree::BFS() {  // возвращает количество узлов в самом широком слое
     std::queue<Node *> Queue;
-    if (root != nullptr) Queue.push(root);
+    if (root != nullptr) Queue.emplace(root);
     int width = (int) Queue.size();
     int Max = (int) Queue.size();
     while (!Queue.empty()) {
@@ -61,9 +61,9 @@ int Tree::BFS() {  // возвращает количество узлов в с
         Queue.pop();
         --width;
         if (node->Left)
-            Queue.push(node->Left);
+            Queue.emplace(node->Left);
         if (node->Right)
-            Queue.push(node->Right);
+            Queue.emplace(node->Right);
         if (width == 0) {
             width = (int) Queue.size();
             Max = std::max(Max, width);
@@ -90,6 +90,7 @@ public:
     ~Treap() {
         delete root;
     }
+    explicit Treap() : root(nullptr) {}
     void Insert(TreapNode *inserted_element);
     int BFS();
 
@@ -131,7 +132,7 @@ void Treap::Insert(TreapNode *inserted_element) {
 
 int Treap::BFS() {
     std::queue<TreapNode *> Queue;
-    if (root != nullptr) Queue.push(root);
+    if (root != nullptr) Queue.emplace(root);
     int width = (int) Queue.size();
     int Max = (int) Queue.size();
     while (!Queue.empty()) {
@@ -139,9 +140,9 @@ int Treap::BFS() {
         Queue.pop();
         --width;
         if (current->Left)
-            Queue.push(current->Left);
+            Queue.emplace(current->Left);
         if (current->Right)
-            Queue.push(current->Right);
+            Queue.emplace(current->Right);
         if (width == 0) {
             width = (int) Queue.size();
             Max = std::max(Max, width);
