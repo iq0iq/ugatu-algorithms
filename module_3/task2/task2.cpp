@@ -2,19 +2,18 @@
 #include <iostream>
 #include <queue>
 
-struct Node {
-    int Data;
-    Node *Left = nullptr;
-    Node *Right = nullptr;
-    explicit Node(int Data) : Data(Data) {}
-    ~Node() {
-        delete Left;
-        delete Right;
-    }
-};
-
 class Tree {
 private:
+    struct Node {
+        int Data;
+        Node *Left = nullptr;
+        Node *Right = nullptr;
+        explicit Node(int Data) : Data(Data) {}
+        ~Node() {
+            delete Left;
+            delete Right;
+        }
+    };
     Node *root = nullptr;
 
 public:
@@ -22,11 +21,11 @@ public:
         delete root;
     }
     explicit Tree() : root(nullptr) {}
-    void Add(int value);
-    int BFS();
+    void Insert(int value);
+    size_t WidestLayer();
 };
 
-void Tree::Add(int value) {
+void Tree::Insert(int value) {
     if (!root) {
         root = new Node(value);
         return;
@@ -51,11 +50,11 @@ void Tree::Add(int value) {
     }
 }
 
-int Tree::BFS() {  // возвращает количество узлов в самом широком слое
+size_t Tree::WidestLayer() {  // возвращает количество узлов в самом широком слое
     std::queue<Node *> Queue;
     if (root != nullptr) Queue.emplace(root);
-    int width = (int) Queue.size();
-    int Max = (int) Queue.size();
+    size_t width = Queue.size();
+    size_t Max = Queue.size();
     while (!Queue.empty()) {
         Node *node = Queue.front();
         Queue.pop();
@@ -65,39 +64,38 @@ int Tree::BFS() {  // возвращает количество узлов в с
         if (node->Right)
             Queue.emplace(node->Right);
         if (width == 0) {
-            width = (int) Queue.size();
-            Max = std::max(Max, width);
+            width = Queue.size();
+            if (width > Max) Max = width;
         }
     }
     return Max;
 }
 
 
-struct TreapNode {
-    int Key;
-    int Priority;
-    TreapNode *Left = nullptr;
-    TreapNode *Right = nullptr;
-    ~TreapNode() {
-        delete Left;
-        delete Right;
-    }
-    explicit TreapNode(int Key, int Priority) : Key(Key), Priority(Priority) {}
-};
-
 class Treap {
+private:
+    struct TreapNode {
+        int Key;
+        int Priority;
+        TreapNode *Left = nullptr;
+        TreapNode *Right = nullptr;
+        ~TreapNode() {
+            delete Left;
+            delete Right;
+        }
+        explicit TreapNode(int Key, int Priority) : Key(Key), Priority(Priority) {}
+    };
+    TreapNode *root = nullptr;
+    void Split(TreapNode *current_node, int key, TreapNode *&left, TreapNode *&right);
+    void Add(TreapNode *&current, TreapNode *inserted_element);
+
 public:
     ~Treap() {
         delete root;
     }
     explicit Treap() : root(nullptr) {}
-    void Insert(TreapNode *inserted_element);
-    int BFS();
-
-private:
-    TreapNode *root = nullptr;
-    void Split(TreapNode *current_node, int key, TreapNode *&left, TreapNode *&right);
-    void Add(TreapNode *&current, TreapNode *inserted_element);
+    void Insert(int key, int priority);
+    size_t WidestLayer();
 };
 
 void Treap::Split(TreapNode *current_node, int key, TreapNode *&left, TreapNode *&right) {
@@ -126,15 +124,16 @@ void Treap::Add(TreapNode *&current, TreapNode *inserted_element) {
     }
 }
 
-void Treap::Insert(TreapNode *inserted_element) {
+void Treap::Insert(int key, int priority) {
+    TreapNode *inserted_element = new TreapNode(key, priority);
     Add(root, inserted_element);
 }
 
-int Treap::BFS() {
+size_t Treap::WidestLayer() {
     std::queue<TreapNode *> Queue;
     if (root != nullptr) Queue.emplace(root);
-    int width = (int) Queue.size();
-    int Max = (int) Queue.size();
+    size_t width = Queue.size();
+    size_t Max = Queue.size();
     while (!Queue.empty()) {
         TreapNode *current = Queue.front();
         Queue.pop();
@@ -144,8 +143,8 @@ int Treap::BFS() {
         if (current->Right)
             Queue.emplace(current->Right);
         if (width == 0) {
-            width = (int) Queue.size();
-            Max = std::max(Max, width);
+            width = Queue.size();
+            if (width > Max) Max = width;
         }
     }
     return Max;
@@ -161,10 +160,9 @@ int main() {
     Tree tree;
     for (int i = 0; i < n; ++i) {
         std::cin >> key >> priority;
-        TreapNode *inserted_element = new TreapNode(key, priority);
-        treap.Insert(inserted_element);
-        tree.Add(key);
+        treap.Insert(key, priority);
+        tree.Insert(key);
     }
-    std::cout << treap.BFS() - tree.BFS() << std::endl;
+    std::cout << static_cast<long long>(treap.WidestLayer()) - static_cast<long long>(tree.WidestLayer()) << std::endl;
     return 0;
 }
