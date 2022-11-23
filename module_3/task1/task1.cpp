@@ -5,8 +5,7 @@ struct Node {
     int Data;
     Node *Left = nullptr;
     Node *Right = nullptr;
-    Node *Parent = nullptr;
-    explicit Node(int Data, Node *Parent = nullptr) : Data(Data), Parent(Parent) {}
+    explicit Node(int Data) : Data(Data) {}
     ~Node() {
         delete Left;
         delete Right;
@@ -21,6 +20,7 @@ public:
     ~Tree() {
         delete root;
     }
+    explicit Tree() : root(nullptr) {}
     void Add(int value);
     void Print() const;
 };
@@ -36,14 +36,14 @@ void Tree::Add(int value) {
             if (current->Left) {
                 current = current->Left;
             } else {
-                current->Left = new Node(value, current);
+                current->Left = new Node(value);
                 break;
             }
         } else {  // Идем в Right
             if (current->Right) {
                 current = current->Right;
             } else {
-                current->Right = new Node(value, current);
+                current->Right = new Node(value);
                 break;
             }
         }
@@ -53,7 +53,7 @@ void Tree::Add(int value) {
 void Tree::Print() const {
     if (!root) return;
     std::stack<std::pair<Node *, bool>> Stack;
-    Stack.push({root, false});
+    Stack.emplace(root, false);
     while (!Stack.empty()) {
         if (Stack.top().second) {
             std::cout << Stack.top().first->Data << ' ';
@@ -62,9 +62,9 @@ void Tree::Print() const {
         }
         Node *current = Stack.top().first;
         Stack.pop();
-        if (current->Right) Stack.push({current->Right, false});
+        if (current->Right) Stack.emplace(current->Right, false);
         Stack.push({current, true});
-        if (current->Left) Stack.push({current->Left, false});
+        if (current->Left) Stack.emplace(current->Left, false);
     }
     std::cout << std::endl;
 }
