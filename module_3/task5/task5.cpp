@@ -3,26 +3,25 @@
 #include <string>
 #include <vector>
 
-int Hash1(const std::string &key, unsigned int size) {
-    int hash = 0;
+size_t Hash1(const std::string &key, size_t size) {
+    size_t hash = 0;
     for (char i: key)
-        hash = (hash * 27 + i - 'a') % static_cast<int>(size);
+        hash = (hash * 27 + i - 'a') % size;
     return hash;
 }
 
-int Hash2(const std::string &key, unsigned int size) {
+size_t Hash2(const std::string &key, size_t size) {
     if (key.empty()) return 0;
-    int hash = 0;
+    size_t hash = 0;
     int i = static_cast<int>(key.size()) - 1;
     for (; i >= 0; --i)
-        hash = (hash * 27 + key[i] - 'a') % static_cast<int>(size);
-    return (2 * hash + 1) % static_cast<int>(size);
+        hash = (hash * 27 + key[i] - 'a') % size;
+    return (2 * hash + 1) % size;
 }
 
 class HashTable {
 public:
     explicit HashTable(int size = 8) : table(size) {}
-    ~HashTable() = default;
     bool Has(const std::string &key) const;
     bool Add(const std::string &key);
     bool Remove(const std::string &key);
@@ -38,7 +37,7 @@ void HashTable::Growth() {
     for (std::string i: table) {
         if (!i.empty() && i != "DELETED") {
             for (int j = 0; j < new_table.size(); ++j) {
-                int hash = (Hash1(i, new_table.size()) + j * Hash2(i, new_table.size())) % static_cast<int>(new_table.size());
+                size_t hash = (Hash1(i, new_table.size()) + j * Hash2(i, new_table.size())) % new_table.size();
                 if (new_table[hash].empty()) {
                     new_table[hash] = i;
                     break;
@@ -51,42 +50,35 @@ void HashTable::Growth() {
 
 bool HashTable::Has(const std::string &key) const {
     for (int i = 0; i < table.size(); ++i) {
-        int hash = (Hash1(key, table.size()) + i * Hash2(key, table.size())) % static_cast<int>(table.size());
-        if (table[hash].empty()) {
-            return false;
-        } else {
-            if (table[hash] == key) return true;
-        }
+        size_t hash = (Hash1(key, table.size()) + i * Hash2(key, table.size())) % table.size();
+        if (table[hash].empty()) return false;
+        if (table[hash] == key) return true;
     }
     return false;
 }
 
 bool HashTable::Add(const std::string &key) {
-    if (count >= 0.75 * static_cast<double>(table.size())) Growth();
+    if (count >= 0.75 * table.size()) Growth();
     for (int i = 0; i < table.size(); ++i) {
-        int hash = (Hash1(key, table.size()) + i * Hash2(key, table.size())) % static_cast<int>(table.size());
+        size_t hash = (Hash1(key, table.size()) + i * Hash2(key, table.size())) % table.size();
         if (table[hash].empty() || table[hash] == "DELETED") {
             table[hash] = key;
             ++count;
             return true;
-        } else {
-            if (table[hash] == key) return false;
         }
+        if (table[hash] == key) return false;
     }
     return false;
 }
 
 bool HashTable::Remove(const std::string &key) {
     for (int i = 0; i < table.size(); ++i) {
-        int hash = (Hash1(key, table.size()) + i * Hash2(key, table.size())) % static_cast<int>(table.size());
-        if (table[hash].empty()) {
-            return false;
-        } else {
-            if (table[hash] == key) {
-                table[hash] = "DELETED";
-                --count;
-                return true;
-            }
+        size_t hash = (Hash1(key, table.size()) + i * Hash2(key, table.size())) % table.size();
+        if (table[hash].empty()) return false;
+        if (table[hash] == key) {
+            table[hash] = "DELETED";
+            --count;
+            return true;
         }
     }
     return false;
