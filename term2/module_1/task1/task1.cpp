@@ -16,7 +16,7 @@ int counting(const std::vector<int> &denominations,
       }
     }
   }
-  return dp.back() == -1 ? -1 : dp.back();
+  return dp.back() == std::numeric_limits<unsigned int>::max() ? -1 : dp.back();
 }
 
 int main() {
