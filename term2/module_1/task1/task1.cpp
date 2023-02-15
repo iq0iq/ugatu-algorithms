@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 #include <vector>
 
 int counting(const std::vector<int> &denominations,
@@ -8,8 +9,7 @@ int counting(const std::vector<int> &denominations,
   for (unsigned int i = 1; i < dp.size(); ++i) {
     for (int j = 0; j < denominations.size(); ++j) {
       if (i >= denominations[j]) {
-        if (dp[i - denominations[j]] != -1 &&
-            dp[i - denominations[j]] + 1 < dp[i]) {
+        if (dp[i - denominations[j]] < dp[i] - 1) {
           last_in[i] = denominations[j];
           dp[i] = dp[i - denominations[j]] + 1;
         }
@@ -28,7 +28,7 @@ int main() {
   }
   int s = 0;
   std::cin >> s;
-  std::vector<unsigned int> dp(s + 1, -1);
+  std::vector<unsigned int> dp(s + 1, std::numeric_limits<unsigned int>::max());
   std::vector<unsigned int> last_in(s + 1);
   std::cout << counting(denominations, dp, last_in) << std::endl;
   if (last_in[s] != 0) {
