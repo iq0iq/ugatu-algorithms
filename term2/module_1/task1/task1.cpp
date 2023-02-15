@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-unsigned int counting(std::vector<int> &x, std::vector<unsigned int> &dp,
-                      std::vector<unsigned int> &last_in) {
+int counting(std::vector<int> &x, std::vector<unsigned int> &dp,
+             std::vector<unsigned int> &last_in) {
   dp[0] = 0;
   for (unsigned int i = 1; i < dp.size(); ++i) {
     for (int j = 0; j < x.size(); ++j) {
