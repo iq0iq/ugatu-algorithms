@@ -1,42 +1,40 @@
 #include <iostream>
 #include <vector>
 
-int counting(std::vector<int> &x, std::vector<unsigned int> &dp,
+int counting(const std::vector<int> &denominations,
+             std::vector<unsigned int> &dp,
              std::vector<unsigned int> &last_in) {
   dp[0] = 0;
   for (unsigned int i = 1; i < dp.size(); ++i) {
-    for (int j = 0; j < x.size(); ++j) {
-      if (i >= x[j]) {
-        if (dp[i - x[j]] + 1 < dp[i]) {
-          last_in[i] = x[j];
-          dp[i] = dp[i - x[j]] + 1;
+    for (int j = 0; j < denominations.size(); ++j) {
+      if (i >= denominations[j]) {
+        if (dp[i - denominations[j]] != -1 &&
+            dp[i - denominations[j]] + 1 < dp[i]) {
+          last_in[i] = denominations[j];
+          dp[i] = dp[i - denominations[j]] + 1;
         }
       }
     }
   }
-  if (dp[dp.size() - 1] == 4'294'967'294) {
-    return -1;
-  } else {
-    return dp[dp.size() - 1];
-  }
+  return dp.back() == -1 ? -1 : dp.back();
 }
 
 int main() {
   int n = 0;
   std::cin >> n;
-  std::vector<int> x(n);
+  std::vector<int> denominations(n);
   for (int i = 0; i < n; ++i) {
-    std::cin >> x[i];
+    std::cin >> denominations[i];
   }
   int s = 0;
   std::cin >> s;
-  std::vector<unsigned int> dp(s + 1, 4'294'967'294);
-  std::vector<unsigned int> last_in(s + 1, 0);
-  std::cout << counting(x, dp, last_in) << std::endl;
+  std::vector<unsigned int> dp(s + 1, -1);
+  std::vector<unsigned int> last_in(s + 1);
+  std::cout << counting(denominations, dp, last_in) << std::endl;
   if (last_in[s] != 0) {
     while (last_in[s] != 0) {
       std::cout << last_in[s] << ' ';
-      s = s - last_in[s];
+      s -= last_in[s];
     }
     std::cout << std::endl;
   }
