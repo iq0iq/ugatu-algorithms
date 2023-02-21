@@ -2,9 +2,33 @@
 #include <string>
 #include <vector>
 
+std::vector<unsigned int> Stoi(std::string &x) {
+  std::vector<unsigned int> bigint_x;
+  for (int i = x.size() - 1; i >= 0; i -= 9) {
+    bigint_x.push_back(i < 8 ? std::stoi(x.substr(0, i + 1))
+                             : std::stoi(x.substr(i - 8, 9)));
+  }
+  return bigint_x;
+}
+
+std::vector<unsigned int> sum(const std::vector<unsigned int> &bigint_x,
+                              const std::vector<unsigned int> &bigint_y) {
+  std::vector<unsigned int> result = bigint_x;
+  int in_mind = 0;
+  for (unsigned int i = 0;
+       i < std::max(result.size(), bigint_y.size()) || in_mind != 0; ++i) {
+    if (i >= result.size())
+      result.push_back(0);
+    result[i] += ((i < bigint_y.size() ? bigint_y[i] : 0) + in_mind);
+    in_mind = result[i] / 1'000'000'000;
+    result[i] %= 1'000'000'000;
+  }
+  return result;
+}
+
 void print(std::vector<unsigned int> &bigint_x) {
   if (bigint_x.size() == 1 && bigint_x[0] == 0) {
-    std::cout << 0 << std::endl;
+    std::cout << 0;
     return;
   }
   std::cout << bigint_x.back();
@@ -20,33 +44,13 @@ void print(std::vector<unsigned int> &bigint_x) {
   }
 }
 
-std::vector<unsigned int> sum(const std::string &x, const std::string &y) {
-  std::vector<unsigned int> bigint_x;
-  std::vector<unsigned int> bigint_y;
-  for (int i = x.size() - 1; i >= 0; i -= 9) {
-    bigint_x.push_back(i < 8 ? std::stoi(x.substr(0, i + 1))
-                             : std::stoi(x.substr(i - 8, 9)));
-  }
-  for (int i = y.size() - 1; i >= 0; i -= 9) {
-    bigint_y.push_back(i < 8 ? std::stoi(y.substr(0, i + 1))
-                             : std::stoi(y.substr(i - 8, 9)));
-  }
-  int in_mind = 0;
-  for (unsigned int i = 0;
-       i < std::max(bigint_x.size(), bigint_y.size()) || in_mind != 0; ++i) {
-    if (i >= bigint_x.size())
-      bigint_x.push_back(0);
-    bigint_x[i] += ((i < bigint_y.size() ? bigint_y[i] : 0) + in_mind);
-    in_mind = bigint_x[i] / 1'000'000'000;
-    bigint_x[i] %= 1'000'000'000;
-  }
-  return bigint_x;
-}
-
 int main() {
-  std::string x, y;
+  std::string x;
+  std::string y;
   std::cin >> x >> y;
-  std::vector<unsigned int> result = sum(x, y);
+  auto bigint_x = Stoi(x);
+  auto bigint_y = Stoi(y);
+  auto result = sum(bigint_x, bigint_y);
   print(result);
   std::cout << std::endl;
   return 0;
