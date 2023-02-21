@@ -18,10 +18,9 @@ void print(std::vector<unsigned int> &bigint_x) {
       std::cout << "00000000";
     std::cout << bigint_x[i];
   }
-  std::cout << std::endl;
 }
 
-void sum(const std::string &x, const std::string &y) {
+std::vector<unsigned int> sum(const std::string &x, const std::string &y) {
   std::vector<unsigned int> bigint_x;
   std::vector<unsigned int> bigint_y;
   for (int i = x.size() - 1; i >= 0; i -= 9) {
@@ -41,12 +40,14 @@ void sum(const std::string &x, const std::string &y) {
     in_mind = bigint_x[i] / 1'000'000'000;
     bigint_x[i] %= 1'000'000'000;
   }
-  print(bigint_x);
+  return bigint_x;
 }
 
 int main() {
   std::string x, y;
   std::cin >> x >> y;
-  sum(x, y);
+  std::vector<unsigned int> result = sum(x, y);
+  print(result);
+  std::cout << std::endl;
   return 0;
 }
