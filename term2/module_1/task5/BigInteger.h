@@ -3,7 +3,7 @@
 #include <vector>
 
 class BigInteger {
-  bool sign;
+  bool non_negative;
   static const int BASE = 1'000'000'000u;
   std::vector<unsigned int> number;
 
@@ -70,9 +70,9 @@ BigInteger operator%(const BigInteger &x, const BigInteger &y);
 
 //.............................................................
 
-BigInteger::BigInteger() : sign(true) { number.emplace_back(0); }
+BigInteger::BigInteger() : non_negative(true) { number.emplace_back(0); }
 
-BigInteger::BigInteger(const size_t &x) : sign(true) {
+BigInteger::BigInteger(const size_t &x) : non_negative(true) {
   size_t copy = x;
   if (x == 0) {
     number.emplace_back(0);
@@ -84,7 +84,7 @@ BigInteger::BigInteger(const size_t &x) : sign(true) {
 }
 
 BigInteger::BigInteger(const int &x) {
-  sign = x >= 0;
+  non_negative = x >= 0;
   if (x == 0) {
     number.emplace_back(0);
   }
@@ -95,13 +95,13 @@ BigInteger::BigInteger(const int &x) {
   }
 }
 
-BigInteger::BigInteger(const bool &x) : sign(true) {
+BigInteger::BigInteger(const bool &x) : non_negative(true) {
   number.emplace_back(x ? 1 : 0);
 }
 
 BigInteger &BigInteger::operator=(const int &x) {
   number.clear();
-  sign = x >= 0;
+  non_negative = x >= 0;
   if (x == 0) {
     number.emplace_back(0);
   }
@@ -115,34 +115,32 @@ BigInteger &BigInteger::operator=(const int &x) {
 
 BigInteger &BigInteger::operator=(const bool &x) {
   number.clear();
-  sign = true;
+  non_negative = true;
   number.emplace_back(static_cast<unsigned int>(x));
   return *this;
 }
 
 BigInteger::operator bool() const {
-  if (number.size() == 1 && number[0] == 0)
-    return false;
-  return true;
+  return number.size() != 1 || number[0] != 0;
 }
 
 BigInteger::operator int() const {
   if (number.empty())
     return 0;
   if (number.size() == 1)
-    return static_cast<int>(sign ? number[0] : -number[0]);
+    return static_cast<int>(non_negative ? number[0] : -number[0]);
   if (number.size() > 2)
     throw std::exception();
-  return static_cast<int>(sign ? number[0] + number[1] * BASE
-                               : -(number[0] + number[1] * BASE));
+  return static_cast<int>(non_negative ? number[0] + number[1] * BASE
+                                       : -(number[0] + number[1] * BASE));
 }
 
 BigInteger &BigInteger::operator+=(const BigInteger &x) {
-  if (sign != x.sign) {
+  if (non_negative != x.non_negative) {
     BigInteger copy_this = *this;
-    copy_this.sign = true;
+    copy_this.non_negative = true;
     BigInteger copy_x = x;
-    copy_x.sign = true;
+    copy_x.non_negative = true;
     if (copy_x < copy_this) {
       copy_this -= copy_x;
       number = copy_this.number;
@@ -150,7 +148,7 @@ BigInteger &BigInteger::operator+=(const BigInteger &x) {
     } else {
       copy_x -= copy_this;
       number = copy_x.number;
-      sign = (!sign || (*this == x && x == 0));
+      non_negative = (!non_negative || (*this == x && x == 0));
       return *this;
     }
   }
@@ -166,10 +164,7 @@ BigInteger &BigInteger::operator+=(const BigInteger &x) {
   return *this;
 }
 
-BigInteger &BigInteger::operator++() {
-  *this += 1;
-  return *this;
-}
+BigInteger &BigInteger::operator++() { return *this += 1; }
 
 BigInteger BigInteger::operator++(int) {
   BigInteger copy = *this;
@@ -178,24 +173,24 @@ BigInteger BigInteger::operator++(int) {
 }
 
 BigInteger &BigInteger::operator-=(const BigInteger &x) {
-  if (!sign && x.sign) {
-    sign = true;
+  if (!non_negative && x.non_negative) {
+    non_negative = true;
     *this += x;
-    sign = false;
+    non_negative = false;
     return *this;
   }
-  if (sign && !x.sign) {
+  if (non_negative && !x.non_negative) {
     BigInteger copy = x;
-    copy.sign = true;
+    copy.non_negative = true;
     *this += copy;
     return *this;
   }
   BigInteger copy_this = *this;
-  copy_this.sign = true;
+  copy_this.non_negative = true;
   BigInteger copy_x = x;
-  copy_x.sign = true;
+  copy_x.non_negative = true;
   if (copy_this < copy_x) {
-    sign = !sign;
+    non_negative = !non_negative;
     copy_x -= copy_this;
     number = copy_x.number;
     return *this;
@@ -215,10 +210,7 @@ BigInteger &BigInteger::operator-=(const BigInteger &x) {
   return *this;
 }
 
-BigInteger &BigInteger::operator--() {
-  *this -= 1;
-  return *this;
-}
+BigInteger &BigInteger::operator--() { return *this -= 1; }
 
 BigInteger BigInteger::operator--(int) {
   BigInteger copy = *this;
@@ -231,7 +223,7 @@ BigInteger BigInteger::operator-() const {
   if (copy.number.size() == 1 && copy.number[0] == 0) {
     copy = 0;
   } else {
-    copy.sign = !copy.sign;
+    copy.non_negative = !copy.non_negative;
   }
   return copy;
 }
@@ -336,7 +328,7 @@ BigInteger::multiply(std::vector<unsigned int> x,
 }
 
 BigInteger &BigInteger::operator*=(const BigInteger &x) {
-  sign = (sign == x.sign || x == 0 || *this == 0);
+  non_negative = (non_negative == x.non_negative || x == 0 || *this == 0);
   auto result = multiply(number, x.number);
   while (result.size() > 1 && result.back() == 0)
     result.pop_back();
@@ -345,7 +337,7 @@ BigInteger &BigInteger::operator*=(const BigInteger &x) {
 }
 
 BigInteger &BigInteger::operator/=(const int &x) {
-  sign = (sign == (x > 0) || *this == 0);
+  non_negative = (non_negative == (x > 0) || *this == 0);
   unsigned int in_mind = 0;
   for (int i = static_cast<int>(number.size()) - 1; i >= 0; --i) {
     size_t cur = number[i] + in_mind * 1ll * BASE;
@@ -358,9 +350,10 @@ BigInteger &BigInteger::operator/=(const int &x) {
 }
 
 BigInteger &BigInteger::operator/=(const BigInteger &x) {
-  BigInteger abs_x = x, abs_this = *this;
-  abs_x.sign = true;
-  abs_this.sign = true;
+  BigInteger abs_x = x;
+  BigInteger abs_this = *this;
+  abs_x.non_negative = true;
+  abs_this.non_negative = true;
   if (abs_this < abs_x) {
     *this = 0;
     return *this;
@@ -376,7 +369,7 @@ BigInteger &BigInteger::operator/=(const BigInteger &x) {
     }
   }
   --left;
-  left.sign = sign == x.sign;
+  left.non_negative = non_negative == x.non_negative;
   *this = left;
   return *this;
 }
@@ -392,7 +385,7 @@ std::string BigInteger::toString() const {
     return "";
   if (number.size() == 1 && number[0] == 0)
     return "0";
-  if (!sign)
+  if (!non_negative)
     x = "-";
   x += std::to_string(number.back());
   for (int i = static_cast<int>(number.size()) - 2; i >= 0; --i) {
@@ -412,9 +405,9 @@ std::istream &operator>>(std::istream &in, BigInteger &x) {
   std::string s;
   in >> s;
   x.number.clear();
-  x.sign = true;
+  x.non_negative = true;
   if (!s.empty() && s[0] == '-') {
-    x.sign = false;
+    x.non_negative = false;
     s.erase(0, 1);
   }
   for (int i = static_cast<int>(s.size()) - 1; i >= 0; i -= 9) {
@@ -433,11 +426,11 @@ std::ostream &operator<<(std::ostream &out, const BigInteger &x) {
 }
 
 bool operator<(const BigInteger &x, const BigInteger &y) {
-  if (!x.sign && y.sign)
+  if (!x.non_negative && y.non_negative)
     return true;
-  if (x.sign && !y.sign)
+  if (x.non_negative && !y.non_negative)
     return false;
-  if (x.sign && y.sign) {
+  if (x.non_negative && y.non_negative) {
     if (x.number.size() != y.number.size())
       return x.number.size() < y.number.size();
     for (int i = static_cast<int>(x.number.size()) - 1; i >= 0; --i) {
