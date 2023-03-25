@@ -7,26 +7,26 @@
 
 inline void create_edges(IGraph *graph) {
   std::mt19937 Random(clock());
-  std::size_t Size = graph->VerticesCount();
-  for (std::size_t i = 0; i < Size; ++i)
-    for (std::size_t j = 0; j < Size; ++j)
+  std::size_t size = graph->VerticesCount();
+  for (std::size_t i = 0; i < size; ++i)
+    for (std::size_t j = 0; j < size; ++j)
       if (Random() % 4 == 0)
         graph->AddEdge(i, j);
 }
 
 void cout_degree(const IGraph *graph) {
-  int vertex_degree = 0;
-  int Max = 0;
-  int Min = graph->VerticesCount();
-  int Sum = 0;
-  for (unsigned int i = 0; i < graph->VerticesCount(); ++i) {
+  std::size_t vertex_degree = 0;
+  std::size_t max_degree = 0;
+  std::size_t min_degree = graph->VerticesCount();
+  std::size_t sum = 0;
+  for (std::size_t i = 0; i < graph->VerticesCount(); ++i) {
     vertex_degree = graph->FindAllAdjacentIn(i).size() +
                     graph->FindAllAdjacentOut(i).size();
-    Max = std::max(Max, vertex_degree);
-    Min = std::min(Min, vertex_degree);
-    Sum += vertex_degree;
+    max_degree = std::max(max_degree, vertex_degree);
+    min_degree = std::min(min_degree, vertex_degree);
+    sum += vertex_degree;
   }
-  std::cout << Min << ' ' << Sum / 1000. << ' ' << Max << '\n';
+  std::cout << min_degree << ' ' << sum / 1000. << ' ' << max_degree << '\n';
 }
 
 int main() {

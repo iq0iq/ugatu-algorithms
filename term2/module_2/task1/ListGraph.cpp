@@ -19,9 +19,11 @@ void ListGraph::AddEdge(std::size_t from, std::size_t to) {
 
 std::size_t ListGraph::VerticesCount() const { return in_edges_.size(); }
 
-std::vector<int> ListGraph::FindAllAdjacentIn(std::size_t vertex) const {
+std::vector<std::size_t>
+ListGraph::FindAllAdjacentIn(std::size_t vertex) const {
   return in_edges_[vertex];
 }
-std::vector<int> ListGraph::FindAllAdjacentOut(std::size_t vertex) const {
+std::vector<std::size_t>
+ListGraph::FindAllAdjacentOut(std::size_t vertex) const {
   return out_edges_[vertex];
 }

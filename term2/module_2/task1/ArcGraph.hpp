@@ -9,10 +9,10 @@ public:
 
   std::size_t VerticesCount() const override;
 
-  std::vector<int> FindAllAdjacentIn(std::size_t vertex) const override;
-  std::vector<int> FindAllAdjacentOut(std::size_t vertex) const override;
+  std::vector<std::size_t> FindAllAdjacentIn(std::size_t vertex) const override;
+  std::vector<std::size_t> FindAllAdjacentOut(std::size_t vertex) const override;
 
 private:
-  std::vector<std::pair<int, int>> pairs;
-  std::size_t Size;
+  std::vector<std::pair<std::size_t, std::size_t>> pairs_;
+  std::size_t size_;
 };

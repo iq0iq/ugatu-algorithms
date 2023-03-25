@@ -8,6 +8,8 @@ struct IGraph {
 
   virtual std::size_t VerticesCount() const = 0;
 
-  virtual std::vector<int> FindAllAdjacentIn(std::size_t vertex) const = 0;
-  virtual std::vector<int> FindAllAdjacentOut(std::size_t vertex) const = 0;
+  virtual std::vector<std::size_t>
+  FindAllAdjacentIn(std::size_t vertex) const = 0;
+  virtual std::vector<std::size_t>
+  FindAllAdjacentOut(std::size_t vertex) const = 0;
 };
