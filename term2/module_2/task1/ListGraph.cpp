@@ -13,8 +13,8 @@ ListGraph::ListGraph(const IGraph *other)
 }
 
 void ListGraph::AddEdge(std::size_t from, std::size_t to) {
-  in_edges_[to].push_back(from);
-  out_edges_[from].push_back(to);
+  in_edges_[to].emplace_back(from);
+  out_edges_[from].emplace_back(to);
 }
 
 std::size_t ListGraph::VerticesCount() const { return in_edges_.size(); }

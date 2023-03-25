@@ -14,5 +14,5 @@ public:
 
 private:
   std::vector<std::pair<int, int>> pairs;
-  size_t Size;
+  std::size_t Size;
 };

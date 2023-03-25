@@ -7,9 +7,9 @@
 
 inline void create_edges(IGraph *graph) {
   std::mt19937 Random(clock());
-  size_t Size = graph->VerticesCount();
-  for (size_t i = 0; i < Size; ++i)
-    for (size_t j = 0; j < Size; ++j)
+  std::size_t Size = graph->VerticesCount();
+  for (std::size_t i = 0; i < Size; ++i)
+    for (std::size_t j = 0; j < Size; ++j)
       if (Random() % 4 == 0)
         graph->AddEdge(i, j);
 }
