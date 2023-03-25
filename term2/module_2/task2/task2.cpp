@@ -5,11 +5,11 @@ class Graph {
 public:
   explicit Graph(int vertices_count);
 
-  void AddEdge(size_t from, size_t to);
+  void AddEdge(std::size_t from, std::size_t to);
 
-  size_t VerticesCount() const;
+  std::size_t VerticesCount() const;
 
-  std::vector<int> FindAllAdjacent(size_t vertex) const;
+  std::vector<int> FindAllAdjacent(std::size_t vertex) const;
 
 private:
   std::vector<std::vector<int>> edges;
@@ -17,14 +17,14 @@ private:
 
 Graph::Graph(int vertices_count) : edges(vertices_count) {}
 
-void Graph::AddEdge(size_t from, size_t to) {
+void Graph::AddEdge(std::size_t from, std::size_t to) {
   edges[to].emplace_back(from);
   edges[from].emplace_back(to);
 }
 
 std::size_t Graph::VerticesCount() const { return edges.size(); }
 
-std::vector<int> Graph::FindAllAdjacent(size_t vertex) const {
+std::vector<int> Graph::FindAllAdjacent(std::size_t vertex) const {
   return edges[vertex];
 }
 
@@ -44,7 +44,7 @@ bool DFS(Graph &graph, std::vector<bool> &used, std::vector<bool> &color,
 }
 
 bool MainDFS(Graph &graph) {  // returns true if the graph is bipartite
-  size_t Size = graph.VerticesCount();
+  std::size_t Size = graph.VerticesCount();
   std::vector<bool> used(Size);
   std::vector<bool> color(Size);  // false - first part of vertexes, true - second
   for (int i = 0; i < Size; ++i)
