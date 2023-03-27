@@ -1,7 +1,7 @@
 #include "ListGraph.hpp"
 #include <iostream>
 
-ListGraph::ListGraph(int vertices_count)
+ListGraph::ListGraph(std::size_t vertices_count)
     : in_edges_(vertices_count), out_edges_(vertices_count) {}
 
 ListGraph::ListGraph(const IGraph *other)

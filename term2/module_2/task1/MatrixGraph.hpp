@@ -2,7 +2,7 @@
 
 class MatrixGraph : public IGraph {
 public:
-  explicit MatrixGraph(int vertices_count);
+  explicit MatrixGraph(std::size_t vertices_count);
   explicit MatrixGraph(const IGraph *other);
 
   void AddEdge(std::size_t from, std::size_t to) override;

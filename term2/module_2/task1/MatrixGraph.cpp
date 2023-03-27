@@ -1,12 +1,10 @@
 #include "MatrixGraph.hpp"
 
-MatrixGraph::MatrixGraph(int vertices_count)
-    : matrix_(std::vector<std::vector<bool>>(
-          vertices_count, std::vector<bool>(vertices_count))) {}
+MatrixGraph::MatrixGraph(std::size_t vertices_count)
+    : matrix_(vertices_count, std::vector<bool>(vertices_count)) {}
 
 MatrixGraph::MatrixGraph(const IGraph *other)
-    : matrix_(std::vector<std::vector<bool>>(
-          other->VerticesCount(), std::vector<bool>(other->VerticesCount()))) {
+    : matrix_(other->VerticesCount(), std::vector<bool>(other->VerticesCount())) {
   for (std::size_t i = 0; i < matrix_.size(); ++i) {
     for (std::size_t j : other->FindAllAdjacentIn(i))
       matrix_[j][i] = true;

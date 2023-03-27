@@ -3,7 +3,7 @@
 
 class SetGraph : public IGraph {
 public:
-  explicit SetGraph(int vertices_count);
+  explicit SetGraph(std::size_t vertices_count);
   explicit SetGraph(const IGraph *other);
 
   void AddEdge(std::size_t from, std::size_t to) override;

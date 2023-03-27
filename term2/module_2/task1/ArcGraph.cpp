@@ -1,6 +1,6 @@
 #include "ArcGraph.hpp"
 
-ArcGraph::ArcGraph(int vertices_count) : size_(vertices_count) {}
+ArcGraph::ArcGraph(std::size_t vertices_count) : size_(vertices_count) {}
 
 ArcGraph::ArcGraph(const IGraph *other) {
   size_ = other->VerticesCount();

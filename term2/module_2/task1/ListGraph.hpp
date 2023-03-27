@@ -2,7 +2,7 @@
 
 class ListGraph : public IGraph {
 public:
-  explicit ListGraph(int vertices_count);
+  explicit ListGraph(std::size_t vertices_count);
   explicit ListGraph(const IGraph *other);
 
   void AddEdge(std::size_t from, std::size_t to) override;
