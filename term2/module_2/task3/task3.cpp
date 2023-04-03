@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <stack>
 #include <vector>
 
 class ListGraph {
@@ -26,34 +27,50 @@ void ListGraph::AddEdge(std::size_t from, std::size_t to) {
 
 std::size_t ListGraph::VerticesCount() const { return in_edges_.size(); }
 
-std::vector<std::size_t> ListGraph::FindAllAdjacentIn(std::size_t vertex) const {
+std::vector<std::size_t>
+ListGraph::FindAllAdjacentIn(std::size_t vertex) const {
   return in_edges_[vertex];
 }
-std::vector<std::size_t> ListGraph::FindAllAdjacentOut(std::size_t vertex) const {
+std::vector<std::size_t>
+ListGraph::FindAllAdjacentOut(std::size_t vertex) const {
   return out_edges_[vertex];
 }
 
 void DFS_for_inverted(const ListGraph &graph, std::vector<std::size_t> &leave,
-                      std::vector<bool> &used, int current, int &time) {
-  used[current] = true;
-  for (std::size_t i : graph.FindAllAdjacentIn(current)) {
-    if (!used[i])
-      DFS_for_inverted(graph, leave, used, i, time);
+                      std::vector<bool> &used, std::size_t current) {
+  std::stack<std::size_t> vertices;
+  vertices.emplace(current);
+  std::vector<std::size_t> local_leave;
+  while (!vertices.empty()) {
+    current = vertices.top();
+    vertices.pop();
+    used[current] = true;
+    for (std::size_t i : graph.FindAllAdjacentIn(current)) {
+      if (!used[i])
+        vertices.emplace(i);
+    }
+    local_leave.emplace_back(current);
   }
-  ++time;
-  leave.emplace_back(current);
+  std::reverse(local_leave.begin(), local_leave.end());
+  leave.insert(leave.end(), local_leave.begin(), local_leave.end());
 }
 
 void DFS(const ListGraph &graph, std::vector<int> &components,
-         std::vector<std::pair<bool, bool>> &in_out, int current,
+         std::vector<std::pair<bool, bool>> &in_out, std::size_t current,
          int current_component) {
-  components[current] = current_component;
-  for (std::size_t i : graph.FindAllAdjacentOut(current)) {
-    if (components[i] == -1)
-      DFS(graph, components, in_out, i, current_component);
-    if (components[i] != current_component) {
-      in_out[current_component].second = true;
-      in_out[components[i]].first = true;
+  std::stack<std::size_t> vertices;
+  vertices.emplace(current);
+  while (!vertices.empty()) {
+    current = vertices.top();
+    vertices.pop();
+    components[current] = current_component;
+    for (std::size_t i : graph.FindAllAdjacentOut(current)) {
+      if (components[i] == -1)
+        vertices.emplace(i);
+      if (components[i] != current_component && components[i] != -1) {
+        in_out[current_component].second = true;
+        in_out[components[i]].first = true;
+      }
     }
   }
 }
@@ -62,13 +79,12 @@ void Kosaraju(const ListGraph &graph,
               std::vector<std::pair<bool, bool>> &in_out) {
   std::vector<std::size_t> leave;
   std::vector<bool> used(graph.VerticesCount());
-  int time = 0;
   for (std::size_t i = 0; i < graph.VerticesCount(); ++i) {
     if (!used[i])
-      DFS_for_inverted(graph, leave, used, i, time);
+      DFS_for_inverted(graph, leave, used, i);
   }
   std::vector<int> components(graph.VerticesCount(), -1);
-  int components_number = 0;  
+  int components_number = 0;
   for (int i = leave.size() - 1; i >= 0; --i) {
     if (components[leave[i]] == -1) {
       in_out.emplace_back(false, false);
@@ -86,7 +102,7 @@ std::size_t number_of_edges_to_be_added(const ListGraph &graph) {
   int outcoming_sum = 0;
   int isolated_sum = 0;
   for (auto i : in_out) {
-    if(i.first && i.second)
+    if (i.first && i.second)
       continue;
     if (i.first)
       ++incoming_sum;
