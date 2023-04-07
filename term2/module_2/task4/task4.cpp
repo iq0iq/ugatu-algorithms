@@ -55,6 +55,8 @@ std::size_t Dijkstra(Graph &graph, std::size_t from, std::size_t to) {
 }
 
 int main() {
+  std::ios::sync_with_stdio(false);
+  std::cin.tie(nullptr);
   int n = 0;
   int m = 0;
   std::cin >> n >> m;
