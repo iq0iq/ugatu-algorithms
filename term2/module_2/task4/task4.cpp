@@ -31,23 +31,54 @@ Graph::FindAllAdjacent(std::size_t vertex) const {
   return edges_[vertex];
 }
 
+struct priority_queue {
+public:
+  void Push(std::size_t distance, std::size_t vertex);
+  std::size_t Pop();
+  void DecreaseKey(std::size_t distance, std::size_t old_distance,
+                   std::size_t vertex);
+  bool Empty();
+
+private:
+  std::set<std::pair<std::size_t, std::size_t>> set_;
+};
+
+void priority_queue::Push(std::size_t distance, std::size_t vertex) {
+  set_.emplace(distance, vertex);
+}
+
+std::size_t priority_queue::Pop() {
+  std::size_t vertex = set_.begin()->second;
+  set_.erase(set_.begin());
+  return vertex;
+}
+
+void priority_queue::DecreaseKey(std::size_t distance, std::size_t old_distance,
+                                 std::size_t vertex) {
+  set_.erase(set_.find({old_distance, vertex}));
+  set_.emplace(distance, vertex);
+}
+
+bool priority_queue::Empty() { return set_.empty(); }
+
 std::size_t Dijkstra(Graph &graph, std::size_t from, std::size_t to) {
   std::vector<std::size_t> distance(graph.VerticesCount(), ULLONG_MAX);
   distance[from] = 0;
-  std::set<std::pair<std::size_t, std::size_t>> queue;
-  queue.emplace(0, from);
-  while (!queue.empty()) {
-    std::size_t current = queue.begin()->second;
-    queue.erase(queue.begin());
+  priority_queue queue;
+  queue.Push(0, from);
+  while (!queue.Empty()) {
+    std::size_t current = queue.Pop();
     for (std::pair<std::size_t, std::size_t> i :
          graph.FindAllAdjacent(current)) {
       std::size_t index = i.first;
       std::size_t weight = i.second;
       if (distance[index] > distance[current] + weight) {
-        if (distance[index] != ULLONG_MAX)
-          queue.erase(queue.find({distance[index], index}));
+        if (distance[index] == ULLONG_MAX) {
+          queue.Push(distance[current] + weight, index);
+        } else {
+          queue.DecreaseKey(distance[current] + weight, distance[index], index);
+        }
         distance[index] = distance[current] + weight;
-        queue.emplace(distance[index], index);
       }
     }
   }
