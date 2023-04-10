@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unordered_set>
 #include <vector>
 
 class MatrixGraph {
@@ -39,8 +40,7 @@ bool Relax(MatrixGraph &graph, std::vector<double> &prices, std::size_t from,
            std::size_t to) {
   if (prices[to] < prices[from] * graph.FindWeight(from, to)) {
     prices[to] = prices[from] * graph.FindWeight(from, to);
-    if (prices[to] > 1)
-      return true;
+    return true;
   }
   return false;
 }
@@ -49,15 +49,24 @@ bool BellmanFord(MatrixGraph &graph) {
   std::vector<double> prices(graph.VerticesCount());
   for (std::size_t i : graph.FindAllAdjacentOut(0))
     prices[i] = graph.FindWeight(0, i);
-  for (std::size_t i = 1; i < graph.VerticesCount() - 1; ++i) {
-    for (std::size_t from = 0; from < graph.VerticesCount(); ++from) {
+  std::unordered_set<std::size_t> relaxed;
+  for (std::size_t i = 0; i < graph.VerticesCount(); ++i)
+    relaxed.emplace(i);
+  std::unordered_set<std::size_t> being_relaxed;
+
+  for (std::size_t i = 0; i < graph.VerticesCount() - 1; ++i) {
+    for (std::size_t from : relaxed) {
       for (std::size_t to : graph.FindAllAdjacentOut(from)) {
-        Relax(graph, prices, from, to);
+        if (Relax(graph, prices, from, to))
+          being_relaxed.emplace(to);
       }
     }
+    if (being_relaxed.empty())
+      return true;
+    relaxed = std::move(being_relaxed);
   }
 
-  for (std::size_t from = 0; from < graph.VerticesCount(); ++from) {
+  for (std::size_t from : relaxed) {
     for (std::size_t to : graph.FindAllAdjacentOut(from)) {
       if (Relax(graph, prices, from, to))
         return false;
