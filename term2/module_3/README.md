@@ -1,0 +1,1 @@
+Solutions of contest3
