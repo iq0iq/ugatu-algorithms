@@ -29,7 +29,7 @@ std::string min_string(const std::vector<uint32_t> &prefix) {
 
 int main() {
   std::vector<uint32_t> prefix;
-  uint32_t x;
+  uint32_t x = 0;
   while (std::cin >> x)
     prefix.emplace_back(x);
   std::cout << min_string(prefix) << std::endl;
