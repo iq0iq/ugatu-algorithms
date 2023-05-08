@@ -7,7 +7,7 @@ uint64_t Manacher(const std::string &s) {
   std::vector<uint32_t> result(s.size(), 1);
   uint32_t left = 0;
   uint32_t right = 1;
-  for (uint32_t i = 1; i < s.size(); ++i) {
+  for (uint32_t i = 1; i < s.size(); ++i) {  // odd
     uint32_t &current_result = result[i];
     if (i < right) {
       uint32_t symbol_index = left + right - i - 1;
@@ -26,7 +26,7 @@ uint64_t Manacher(const std::string &s) {
   result = std::vector<uint32_t>(s.size());
   left = 0;
   right = 1;
-  for (uint32_t i = 1; i < s.size(); ++i) {
+  for (uint32_t i = 1; i < s.size(); ++i) {  // even
     uint32_t &current_result = result[i];
     if (i < right) {
       uint32_t symbol_index = left + right - i;
